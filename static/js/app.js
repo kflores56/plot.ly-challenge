@@ -1,44 +1,90 @@
-//// READ IN JSON ////
-
-d3.json("./data/samples.json").then(function(data) {
-  console.log(data);
-});
-
-const bellyData = d3.json("./data/samples.json");
-console.log("All Data:", bellyData);
-
+////VAR FOR CHARTS ////
+var idSelect = d3.select("#selDataset");
+var demoCard = d3.select("#sample-metadata");
+var barChart = d3.select("#bar");
+var bubbleChart = d3.select("bubble");
+var gaugeChart = d3.select("gauge");
 
 //// POPULATE DROPDOWN ////
 
-//pending
+function init() {
 
-//// BUILD BAR CHART ////
+  resetData();
 
-function buildSampleDataPlot() {
-    d3.json("./data/samples.json").then(function(data) {
-        
-      // Get data from json object to build plot
-        var otu_ids = bellyData.samples.otu_ids.slice(0, 11);
-        var sample_values = bellyData.sample_values.slice(0, 11);
-        var lables = bellyData.samples.slice(0, 11);
+  d3.json("samples.json").then((data => {
 
-        var bargraph = {
-            type: "bar",
-            x: sample_values,
-            y: otu_ids,
-            text: lables
-        };
+    // populate dropdown
+    data.names.forEach((name => {
+      var option = idSelect.append("option");
+      option.text(name);
+    }));
 
-        var data = [bargraph];
+    // set first ID as default
+    var topID = idSelect.property("value")
 
-        var layout = {
-            title: "Top 10 Operational Taxonomic Units",
-        };
+    createCharts(topID);
 
-        Plotly.newPlot("bar",  data, layout);
+  }));
+};
 
+// function to reset data
+function resetData() {
+  demoCard.htlm("");
+  barChart.html("");
+  bubbleChart.html("");
+  gaugeChart.html("");
+};
+
+function createCharts (id) {
+
+  d3.json("samples.json").then((data => {
+
+    var idSample = data.samples.filter(d => d.id == id)[0];
+
+    var otuIds = [];
+    var otuLabels = [];
+    var sampleValues = [];
+
+    Object.entires(idSample).forEach(([key, value]) => {
+
+      switch (key) {
+        case "otu_ids":
+            otuIds.push(value);
+            break;
+        case "sample_values":
+            sampleValues.push(value);
+            break;
+        case "otu_labels":
+            otuLabels.push(value);
+            break;
+            // case
+        default:
+            break;
+      }
     });
 
-}
+    // get top 10
+    var top_otuIds = otuIds[0].slice(0, 10);
+    var top_otuLabels = otuLabels[0].slice(0, 10);
+    var top_SampleValues = sampleValues[0].slice(0, 10); 
 
-buildSampleDataPlot();
+    //// BUILD BAR CHART ////
+
+    var bargraph = {
+      x: top_SampleValues,
+      y: top_otuIds,
+      text: top_otuLabels,
+      type: "bar"
+      
+  };
+
+    var data = [bargraph];
+
+    var layout = {
+      title: "Top 10 Operational Taxonomic Units",
+    };
+
+    Plotly.newPlot("bar",  data, layout);
+
+    }));
+}
