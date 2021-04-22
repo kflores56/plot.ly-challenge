@@ -15,12 +15,12 @@ console.log("All Data:", bellyData);
 //// BUILD BAR CHART ////
 
 function buildSampleDataPlot() {
-    d3.json("./data/samples.json").then(function(barData) {
+    d3.json("./data/samples.json").then(function(data) {
         
       // Get data from json object to build plot
-        var otu_ids = barData.samples.otu_ids;
-        var sample_values = barData.sample_values;
-        var lables = barData.samples;
+        var otu_ids = bellyData.samples.otu_ids.slice(0, 11);
+        var sample_values = bellyData.sample_values.slice(0, 11);
+        var lables = bellyData.samples.slice(0, 11);
 
         var bargraph = {
             type: "bar",
