@@ -1,36 +1,38 @@
-// Fetch the JSON and cosole log data
+//// READ IN JSON ////
 
-// d3.json("data/samples.json").then(function(data) {
-//     console.log(data);
-// });
+d3.json("./data/samples.json").then(function(data) {
+  var data = bellyData  
+  console.log(data);
+});
 
-// Designate an array for personal IDs
+// Populate drop drown list for personal IDs
+// idList = bellyData.names;
+// var selection = "";
+// for (var i = 0; i < idList; i++) {
+//     option += '<option value="'+ month[i] + '">' + month[i] + "
+//     </option>"
 
-/**
- * Helper function to select sample data
- * Returns an array of values from samples
- * @param {array} rows
- * @param {integer} index
- * index 0 - id
- * index 1 - otu_ids
- * index 2 - sample_values
- * index 3 - otu_labels
- */
- function unpack(rows, index) {
-    return rows.map(function(row) {
-      return row[index];
-    });
-  }
+// document.getElementById('idList').innerHTML = option
+//     select = d3.select("#selDataset");
+//     select.append("option").text(idList[i]);
+// }
+
+
+// function updatePage() {
+//   var dropdownMenu = d3.select("selDataset");
+//   var dataset = drowndownMenu.property("value");
+// }
+
+//// BUILD BAR CHART ////
 
 function buildSampleDataPlot() {
     d3.json("data/samples.json").then(function(data) {
-        console.log(data);
-        var id = unpack(data.samples, 0);
-        var otu_ids = upack(data.samples, 1);
-        var sample_values = unpack(data.sample_values, 2);
-        var lables = unpack(data.samples, 3);
         
-        buildSampleChart();
+      // Get data from json object to build plot
+        // var id = data.samples.id;
+        var otu_ids = data.samples.otu_ids;
+        var sample_values = data.sample_values;
+        var lables = data.samples;
 
         var trace1 = {
             type: "bar",
@@ -42,9 +44,7 @@ function buildSampleDataPlot() {
         var data = [trace1];
 
         var layout = {
-            title: "XXX",
-            xaxis: "xaxis",
-            yaxis: "yaxis"
+            title: "Top 10 Operational Taxonomic Units",
         };
 
         Plotly.newPlot("bar",  data);
