@@ -3,7 +3,7 @@ var idSelect = d3.select("#selDataset");
 var demoCard = d3.select("#sample-metadata");
 var barChart = d3.select("#bar");
 var bubbleChart = d3.select("bubble");
-var gaugeChart = d3.select("gauge");
+
 
 //// POPULATE DROPDOWN ////
 
@@ -13,15 +13,16 @@ function init() {
 
   d3.json("samples.json").then((data => {
 
-    // populate dropdown
+    // attach IDs to dropdown
     data.names.forEach((name => {
       var option = idSelect.append("option");
       option.text(name);
     }));
 
-    // set first ID as default
+    // get first ID
     var topID = idSelect.property("value")
 
+    // set first ID as default
     createCharts(topID);
 
   }));
@@ -29,15 +30,14 @@ function init() {
 
 // function to reset data
 function resetData() {
-  demoCard.htlm("");
+  demoCard.html("");
   barChart.html("");
   bubbleChart.html("");
-  gaugeChart.html("");
 };
 
 function createCharts (id) {
 
-  d3.json("samples.json").then((data => {
+  d3.json("./samples.json").then((data => {
 
     var idSample = data.samples.filter(d => d.id == id)[0];
 
@@ -45,7 +45,9 @@ function createCharts (id) {
     var otuLabels = [];
     var sampleValues = [];
 
-    Object.entires(idSample).forEach(([key, value]) => {
+    //// GET DATA FOR CHARTS ////
+
+    Object.entries(idSample).forEach(([key, value]) => {
 
       switch (key) {
         case "otu_ids":
@@ -70,21 +72,66 @@ function createCharts (id) {
 
     //// BUILD BAR CHART ////
 
-    var bargraph = {
+    var tracebar = {
       x: top_SampleValues,
       y: top_otuIds,
       text: top_otuLabels,
       type: "bar"
-      
-  };
+    };
 
-    var data = [bargraph];
+    var dataBar = [tracebar];
 
-    var layout = {
+    var layoutBar = {
       title: "Top 10 Operational Taxonomic Units",
     };
 
-    Plotly.newPlot("bar",  data, layout);
+    Plotly.newPlot("bar", dataBar, layoutBar);
 
-    }));
+    //// BUBBLE CHART ////
+
+    var tracebubble = {
+      x: otuIds[0],
+      y: sampleValues[0],
+      text: otuLabels[0],
+      mode: 'markers',
+      marker: {
+        size: sampleValues[0],
+        color: otuIds[0],
+        colorscale: 'plasma'
+      }
+    };
+
+    var dataBubble = [tracebubble];
+
+    layoutBubble = {
+      xaxis: 'OTU Id',
+      yaxis: 'Sample Values'
+    };
+
+    Plotly.newPlot('bubble', dataBubble, layoutBubble);
+
+    var sampleMetadata = data.metadata.filter(k => k.id == id)[0];
+
+    Object.entries(sampleMetadata).forEach(([key, value]) => {
+      var metaList = demoCard.append("ul");
+      metaList.attr("class");
+
+      var metaItem = metaList.append("li");
+      metaItem.attr("class");
+
+      metaItem.text(`${key}: ${value}`);
+
+    });
+  }));
+};
+
+function optionChanged(id) {
+
+  // reset the data
+  resetData();
+
+  // plot the charts for this id
+  createCharts(id);
 }
+
+init();
