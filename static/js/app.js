@@ -83,6 +83,7 @@ function createCharts (id) {
 
     var layoutBar = {
       title: "Top 10 Operational Taxonomic Units",
+      // orientation='h'
     };
 
     Plotly.newPlot("bar", dataBar, layoutBar);
